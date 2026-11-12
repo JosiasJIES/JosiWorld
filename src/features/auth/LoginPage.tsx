@@ -15,6 +15,16 @@ export function LoginPage({ initialMode = 'login' }: { initialMode?: 'login' | '
   const [error, setError] = useState(''); const [message, setMessage] = useState(''); const [busy, setBusy] = useState(false)
   const navigate = useNavigate(); const refreshProfile = useAuthStore((s) => s.refreshProfile)
 
+  async function sendPasswordReset() {
+    setError(''); setMessage('')
+    if (!emailSchema.safeParse(email).success) { setError('Escribe primero tu correo.'); return }
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+    if (resetError) setError(resetError.message)
+    else setMessage('Si el correo está registrado, recibirás un enlace para crear una contraseña nueva.')
+  }
+
   async function submit(event: FormEvent) {
     event.preventDefault(); setError(''); setMessage('')
     const validPassword = passSchema.safeParse(password)
@@ -60,7 +70,7 @@ export function LoginPage({ initialMode = 'login' }: { initialMode?: 'login' | '
         <button className="button primary full" disabled={busy}>{busy ? 'Un momento…' : childMode ? 'Entrar a mi espacio' : mode === 'register' ? 'Crear mi cuenta' : 'Iniciar sesión'}<ArrowRight size={17} /></button>
       </form>
       {!childMode && <div className="auth-switch">{mode === 'login' ? <>¿Primera vez por aquí? <button onClick={() => setMode('register')}>Crea una cuenta</button></> : <>¿Ya tienes cuenta? <button onClick={() => setMode('login')}>Inicia sesión</button></>}</div>}
-      {mode === 'login' && !childMode && <button className="text-link" onClick={async () => { if (!emailSchema.safeParse(email).success) { setError('Escribe primero tu correo.'); return }; const { error: resetError } = await supabase.auth.resetPasswordForEmail(email); setError(resetError?.message ?? 'Si el correo está registrado, recibirás un enlace para restablecer tu contraseña.') }}>Olvidé mi contraseña</button>}
+      {mode === 'login' && !childMode && <button className="text-link" onClick={sendPasswordReset}>Olvidé mi contraseña</button>}
     </div></section>
   </main>
 }

@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { onAuthStateChange, useAuthStore } from './stores/auth'
 const LoginPage = lazy(async()=>({default:(await import('./features/auth/LoginPage')).LoginPage}))
+const PasswordResetPage = lazy(async()=>({default:(await import('./features/auth/PasswordResetPage')).PasswordResetPage}))
 const DashboardLayout = lazy(()=>import('./app/layouts/DashboardLayout').then((m)=>({default:m.DashboardLayout})))
 
 function Protected({ role }: { role: 'PARENT' | 'CHILD' }) {
@@ -22,6 +23,7 @@ export default function App() {
   return <BrowserRouter><Suspense fallback={<div className="loading-screen"><span className="spinner"/> Abriendo tu espacio…</div>}><Routes>
     <Route path="/" element={<Navigate to={home} replace />} />
     <Route path="/login" element={user ? <Navigate to={home} replace /> : <LoginPage />} />
+    <Route path="/reset-password" element={<PasswordResetPage />} />
     <Route path="/register" element={user ? <Navigate to="/parent/dashboard" replace /> : <LoginPage initialMode="register" />} />
     <Route path="/parent/*" element={<Protected role="PARENT" />} />
     <Route path="/child/*" element={<Protected role="CHILD" />} />
