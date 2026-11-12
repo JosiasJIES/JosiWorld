@@ -1,0 +1,4 @@
+create index routine_streaks_child_family_idx on public.routine_streaks(child_id,family_id);
+create index routine_streaks_routine_family_idx on public.routine_streaks(routine_id,family_id);
+create index routine_streak_medals_child_family_idx on public.routine_streak_medals(child_id,family_id);
+create index routine_streak_medals_routine_family_idx on public.routine_streak_medals(routine_id,family_id);
